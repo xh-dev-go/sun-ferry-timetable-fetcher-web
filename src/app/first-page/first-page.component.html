@@ -1,0 +1,13 @@
+<div *ngFor="let item of map.keys()">
+  <table>
+    <tr>
+      <th colspan="2">Line {{item.replace("-", " ")}}</th>
+    </tr>
+
+    <tr *ngFor="let row of map.get(item)!.keys()">
+      <td>{{row}}</td>
+      <td>{{map.get(item)!.get(row)}}</td>
+    </tr>
+  </table>
+  <br>
+</div>
