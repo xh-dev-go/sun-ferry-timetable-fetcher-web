@@ -1,15 +1,15 @@
 import {Injectable, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
-import {map, Observable} from "rxjs";
+import {map, Observable, take} from "rxjs";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NetworkService implements OnInit, OnDestroy {
   url: string
 
-  toMap(sm: any): Map<string, Map<string, string>> {
+  static toMap(sm: any): Map<string, Map<string, string>> {
     const r = new Map<string, Map<string, string>>()
     Object.entries(sm).map((pair, v) => {
       let key = pair[0]
@@ -29,15 +29,14 @@ export class NetworkService implements OnInit, OnDestroy {
     return this.http.get<any>(`${this.url}/service-map`)
       .pipe(
         map((a, _) => {
-          return this.toMap(a)
-        })
+          return NetworkService.toMap(a)
+        }),
+        take(1)
       )
   }
 
   constructor(private http: HttpClient) {
     this.url = `${environment.host}/v1/ferry/sun-ferry`
-
-
   }
 
   ngOnDestroy(): void {
