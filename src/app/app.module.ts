@@ -1,23 +1,27 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
-import { AppComponent } from './app.component';
+import {AppComponent} from './app.component';
 import {RouterModule} from "@angular/router";
-import { FirstPageComponent } from './first-page/first-page.component';
-import {NetworkService} from "./ferry/sun-ferry/network.service";
+import {FirstPageComponent} from './first-page/first-page.component';
 import {HttpClientModule} from "@angular/common/http";
+import {FerryScheduleComponent} from './ferry/ferry-schedule/ferry-schedule.component';
+import { BaseComponent } from './base/base.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    FirstPageComponent
+    FirstPageComponent,
+    FerryScheduleComponent,
+    BaseComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     RouterModule.forRoot([
       {path: "first-page", component: FirstPageComponent},
-      {path:"", redirectTo: "/first-page", pathMatch:"full"}
+      {path: "ferry-schedule", component: FerryScheduleComponent},
+      {path:"", redirectTo: "/ferry-schedule", pathMatch:"full"}
     ])
   ],
   providers: [],
