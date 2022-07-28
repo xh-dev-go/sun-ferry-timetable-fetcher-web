@@ -1,9 +1,34 @@
-<p>ferry-schedule works!</p>
-<div *ngFor="let route of routes">
-  {{route}}
-</div>
+<select [ngModel]="selecting|async" (ngModelChange)="selecting.next($event)" >
+  <option *ngFor="let route of routes" >
+    {{route}}
+  </option>
+</select>
 
 <br>
-<div *ngFor="let option of lineOptions">
-  {{option}}
-</div>
+<!--<div *ngFor="let option of lineOptions|async">-->
+<!--  {{option}}-->
+<!--</div>-->
+From:
+<select [ngModel]="from|async" (ngModelChange)="from.next($event)">
+  <option *ngFor="let line of fromOptions|async">{{line}}</option>
+</select>
+
+To:
+<select [ngModel]="to|async" (ngModelChange)="to.next($event)">
+  <option *ngFor="let line of toOptions|async">{{line}}</option>
+</select>
+
+<br>
+
+<table>
+  <title>Ferry Schedule</title>
+  <tbody>
+    <tr *ngFor="let r of schedule">
+      <td>{{r.From}}</td>
+      <td>{{r.To}}</td>
+      <td>{{r.Speed}}</td>
+      <td>{{r.Time}}</td>
+      <td>{{r.Date}}</td>
+    </tr>
+  </tbody>
+</table>

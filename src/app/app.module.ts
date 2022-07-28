@@ -7,6 +7,7 @@ import {FirstPageComponent} from './first-page/first-page.component';
 import {HttpClientModule} from "@angular/common/http";
 import {FerryScheduleComponent} from './ferry/ferry-schedule/ferry-schedule.component';
 import { BaseComponent } from './base/base.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -21,8 +22,9 @@ import { BaseComponent } from './base/base.component';
     RouterModule.forRoot([
       {path: "first-page", component: FirstPageComponent},
       {path: "ferry-schedule", component: FerryScheduleComponent},
-      {path:"", redirectTo: "/ferry-schedule", pathMatch:"full"}
-    ])
+      {path: "", redirectTo: "/ferry-schedule", pathMatch: "full"}
+    ]),
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

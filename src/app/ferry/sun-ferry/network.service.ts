@@ -1,8 +1,9 @@
 import {Injectable, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
-import {BehaviorSubject, filter, firstValueFrom, map, Observable, take} from "rxjs";
+import {BehaviorSubject, filter, firstValueFrom, from, map, Observable, take} from "rxjs";
 import {BaseService} from "../../base/base.service";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,7 @@ export class NetworkService extends BaseService {
     return r
   }
 
+
   public getServiceMap(): Observable<Map<string, Map<string, string>>> {
     return this.routesMapSubject.pipe(
       filter(it => it.size > 0),
@@ -41,16 +43,24 @@ export class NetworkService extends BaseService {
       )
   }
 
-  public async getLineOptions(route: string): Promise<string[]>{
-    let routes = await firstValueFrom(this.getRoutes())
-    if(!routes.includes(route)){
-      alert("Route not match")
-    }
-    let locationPoints = await firstValueFrom(this.getServiceMap())
-    if(locationPoints === undefined){
-      alert("Not allow undefined")
-    }
-    return [...(locationPoints.get(NetworkService.toValue(route)))!.keys()]
+  public getLineOptions(route: string): Observable<string[]>{
+    let getRoutes = ()=>this.getRoutes()
+    let getServiceMap = ()=>this.getServiceMap()
+    return from(new Promise<string[]>(async function (myResolve, reject){
+      try{
+        let routes = await firstValueFrom(getRoutes())
+        if(!routes.includes(route)){
+          alert("Route not match")
+        }
+        let locationPoints = await firstValueFrom(getServiceMap())
+        if(locationPoints === undefined){
+          alert("Not allow undefined")
+        }
+        myResolve([...(locationPoints.get(NetworkService.toValue(route)))!.keys()])
+      } catch (e) {
+        reject(e)
+      }
+    }))
   }
 
   static toDisplay(word: string): string {
@@ -95,4 +105,56 @@ export class NetworkService extends BaseService {
 
   private routesMapSubject = new BehaviorSubject<Map<string, Map<string, string>>>(new Map())
 
+
+  getSchedule(line:string, from: string, to: string): Observable<Route[]>{
+    return this.http.get<Route[]>(`${this.url}/${line}/${from}/${to}/today`)
+      .pipe(
+        map((it,_)=>it.map(it=>toRoute(it)))
+      )
+  }
 }
+
+export interface RouteDto{
+  Route:string,
+  From:string,
+  ZhFrom:string,
+  To:string,
+  ZhTo:string,
+  Frequency:string[],
+  Time: number,
+  Speed: string,
+  Remark: string,
+  ZhRemark: string,
+}
+export interface Route{
+  Route:string,
+  From:string,
+  ZhFrom:string,
+  To:string,
+  ZhTo:string,
+  Frequency:string[],
+  Time: number,
+  Date: Date,
+  Speed: string,
+  Remark: string,
+  ZhRemark: string,
+}
+const toRoute = (self: RouteDto):Route=>{
+  const today = new Date()
+  const d = new Date(today.getFullYear(), today.getMonth(), today.getDate(), self.Time / 100, self.Time % 100, 0)
+  return  {
+    Route: self.Route,
+    From: self.From,
+    ZhFrom: self.ZhFrom,
+    To: self.To,
+    ZhTo: self.ZhTo,
+    Frequency: self.Frequency,
+    Time: self.Time,
+    Date: d,
+    Speed: self.Speed,
+    Remark: self.Remark,
+    ZhRemark: self.ZhRemark,
+  }
+}
+
+
