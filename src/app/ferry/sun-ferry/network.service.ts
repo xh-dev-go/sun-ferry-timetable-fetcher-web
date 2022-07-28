@@ -107,7 +107,7 @@ export class NetworkService extends BaseService {
 
 
   getSchedule(line:string, from: string, to: string): Observable<Route[]>{
-    return this.http.get<Route[]>(`${this.url}/${line}/${from}/${to}/today`)
+    return this.http.get<RouteDtog[]>(`${this.url}/${line}/${from}/${to}/today`)
       .pipe(
         map((it,_)=>it.map(it=>toRoute(it)))
       )
@@ -133,7 +133,7 @@ export interface Route{
   To:string,
   ZhTo:string,
   Frequency:string[],
-  Time: number,
+  Time: string,
   Date: Date,
   Speed: string,
   Remark: string,
@@ -142,6 +142,10 @@ export interface Route{
 const toRoute = (self: RouteDto):Route=>{
   const today = new Date()
   const d = new Date(today.getFullYear(), today.getMonth(), today.getDate(), self.Time / 100, self.Time % 100, 0)
+  const pad = (num:number, size:number) => {
+    var s = "000000000" + num;
+    return s.slice(s.length-size);
+  }
   return  {
     Route: self.Route,
     From: self.From,
@@ -149,12 +153,12 @@ const toRoute = (self: RouteDto):Route=>{
     To: self.To,
     ZhTo: self.ZhTo,
     Frequency: self.Frequency,
-    Time: self.Time,
+    Time: pad(self.Time, 4),
     Date: d,
     Speed: self.Speed,
     Remark: self.Remark,
     ZhRemark: self.ZhRemark,
-  }
+  } as Route
 }
 
 

@@ -9,6 +9,10 @@ import {FerryScheduleComponent} from './ferry/ferry-schedule/ferry-schedule.comp
 import { BaseComponent } from './base/base.component';
 import {FormsModule} from "@angular/forms";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatToolbarModule} from "@angular/material/toolbar";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatSelectModule} from "@angular/material/select";
+import {MatTableModule} from "@angular/material/table";
 
 @NgModule({
   declarations: [
@@ -26,7 +30,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
       {path: "", redirectTo: "/ferry-schedule", pathMatch: "full"}
     ]),
     FormsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatToolbarModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatTableModule
   ],
   providers: [],
   bootstrap: [AppComponent]

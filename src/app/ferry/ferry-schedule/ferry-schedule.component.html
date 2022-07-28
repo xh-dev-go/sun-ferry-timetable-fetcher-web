@@ -1,24 +1,24 @@
-<select [ngModel]="selecting|async" (ngModelChange)="selecting.next($event)" >
-  <option *ngFor="let route of routes" >
-    {{route}}
-  </option>
-</select>
-
+<mat-form-field appearance="fill">
+  <mat-label>Route</mat-label>
+  <mat-select [ngModel]="selecting|async" (ngModelChange)="selecting.next($event)" >
+    <mat-option *ngFor="let route of routes" [value]="route">
+      {{route}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
 <br>
-<!--<div *ngFor="let option of lineOptions|async">-->
-<!--  {{option}}-->
-<!--</div>-->
-From:
-<select [ngModel]="from|async" (ngModelChange)="from.next($event)">
-  <option *ngFor="let line of fromOptions|async">{{line}}</option>
-</select>
-
-To:
-<select [ngModel]="to|async" (ngModelChange)="to.next($event)">
-  <option *ngFor="let line of toOptions|async">{{line}}</option>
-</select>
-
-<br>
+<mat-form-field appearance="fill">
+  <mat-label>From</mat-label>
+  <mat-select [ngModel]="from|async" (ngModelChange)="from.next($event)">
+    <mat-option *ngFor="let line of fromOptions|async" [value]="line">{{line}}</mat-option>
+  </mat-select>
+</mat-form-field>
+<mat-form-field appearance="fill">
+  <mat-label>To</mat-label>
+  <mat-select [ngModel]="to|async" (ngModelChange)="to.next($event)">
+    <mat-option *ngFor="let line of toOptions|async" [value]="line">{{line}}</mat-option>
+  </mat-select>
+</mat-form-field>
 
 <table>
   <title>Ferry Schedule</title>
@@ -28,7 +28,7 @@ To:
       <td>{{r.To}}</td>
       <td>{{r.Speed}}</td>
       <td>{{r.Time}}</td>
-      <td>{{r.Date}}</td>
+<!--      <td>{{r.Date}}</td>-->
     </tr>
   </tbody>
 </table>
