@@ -107,7 +107,7 @@ export class NetworkService extends BaseService {
 
 
   getSchedule(line:string, from: string, to: string): Observable<Route[]>{
-    return this.http.get<RouteDtog[]>(`${this.url}/${line}/${from}/${to}/today`)
+    return this.http.get<RouteDto[]>(`${this.url}/${line}/${from}/${to}/today`)
       .pipe(
         map((it,_)=>it.map(it=>toRoute(it)))
       )
