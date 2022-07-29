@@ -13,6 +13,8 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import {MatTableModule} from "@angular/material/table";
+import {MatButtonModule} from "@angular/material/button";
+import {MatCommonModule} from "@angular/material/core";
 
 @NgModule({
   declarations: [
@@ -33,6 +35,8 @@ import {MatTableModule} from "@angular/material/table";
     BrowserAnimationsModule,
     MatToolbarModule,
     MatFormFieldModule,
+    MatCommonModule,
+    MatButtonModule,
     MatSelectModule,
     MatTableModule
   ],

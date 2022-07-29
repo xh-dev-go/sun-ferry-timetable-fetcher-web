@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {NetworkService, Route} from "../sun-ferry/network.service";
 import {BaseComponent} from "../../base/base.component";
 import {BehaviorSubject, combineLatest, filter, from, map, take} from "rxjs";
+import {Scope} from "pyyqww_t1/dist/Scoping/Scope";
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-ferry-schedule',
@@ -16,6 +18,9 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
   from: BehaviorSubject<string> = new BehaviorSubject<string>("")
   toOptions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
   to: BehaviorSubject<string> = new BehaviorSubject<string>("")
+  dateYesterdayOpt = new BehaviorSubject<Date>(new Date())
+  dateOpt = new BehaviorSubject<Date>(new Date())
+  dateTmrOpt = new BehaviorSubject<Date>(new Date())
 
   schedule: Route[] = []
 
@@ -80,17 +85,55 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
           }
         })
     )
+    this.subscriptions.push(
+      this.dateOpt
+        .pipe(
+          filter(it => it !== null && it !== undefined)
+        )
+        .subscribe(it => {
+          const dayMs = 86400000
+          const tmr = Scope.of(new Date(it)).apply(it => it!.setTime(it!.getTime() + dayMs)).get()
+          const yesterday = Scope.of(new Date(it)).apply(it => it!.setTime(it!.getTime() - dayMs)).get()
+
+          this.dateYesterdayOpt.next(yesterday!)
+          this.dateTmrOpt.next(tmr!)
+        })
+    )
 
     this.subscriptions.push(
       combineLatest([
-          this.to.pipe(map((it, _) => 1)),
-          this.from.pipe(map((it, _) => 1))
+          this.to.pipe(
+            filter(it => it !== null),
+            filter(it => it !== undefined),
+            map((it, _) => 1)
+          ),
+          this.from.pipe(
+            filter(it => it !== null),
+            filter(it => it !== undefined),
+            map((it, _) => 1)
+          ),
+          this.dateOpt.pipe(
+            filter(it => it !== null),
+            filter(it => it !== undefined),
+            map((it, _) => 1)
+          )
         ]
       )
-        .subscribe(it => {
-          this.networkService.getSchedule(NetworkService.toValue(this.selecting.value), NetworkService.toValue(this.from.value), NetworkService.toValue(this.to.value))
+        .subscribe(_ => {
+          const dateString = Scope.of(this.dateOpt.value).mapTo(it => moment(it).format("YYYYMMDD")).get()
+
+          this.networkService.getSchedule(
+            NetworkService.toValue(this.selecting.value),
+            NetworkService.toValue(this.from.value),
+            NetworkService.toValue(this.to.value),
+            dateString!
+          )
             .subscribe(it => this.schedule = it)
         })
     )
+  }
+
+  setDateAsToday() {
+    this.dateOpt.next(Scope.of(new Date()).apply(it => it!.setHours(0, 0, 0)).get()!)
   }
 }

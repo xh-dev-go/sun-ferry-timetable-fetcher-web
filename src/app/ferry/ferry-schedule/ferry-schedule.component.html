@@ -1,6 +1,20 @@
+<div>
+  <button mat-button color="primary" (click)="dateOpt.next(dateYesterdayOpt.value)">
+    {{dateYesterdayOpt|async|date: 'd MMM yyyy'}}
+  </button>
+  <button mat-button color="primary">
+    {{dateOpt|async|date: 'd MMM yyyy'}}
+  </button>
+  <button mat-button color="primary" (click)="dateOpt.next(dateTmrOpt.value)">
+    {{dateTmrOpt|async|date: 'd MMM yyyy'}}
+  </button>
+  <button mat-button color="accent" (click)="setDateAsToday()">
+    Today
+  </button>
+</div>
 <mat-form-field appearance="fill">
   <mat-label>Route</mat-label>
-  <mat-select [ngModel]="selecting|async" (ngModelChange)="selecting.next($event)" >
+  <mat-select [ngModel]="selecting|async" (ngModelChange)="selecting.next($event)">
     <mat-option *ngFor="let route of routes" [value]="route">
       {{route}}
     </mat-option>
@@ -23,12 +37,11 @@
 <table>
   <title>Ferry Schedule</title>
   <tbody>
-    <tr *ngFor="let r of schedule">
-      <td>{{r.From}}</td>
-      <td>{{r.To}}</td>
-      <td>{{r.Speed}}</td>
-      <td>{{r.Time}}</td>
-<!--      <td>{{r.Date}}</td>-->
-    </tr>
+  <tr *ngFor="let r of schedule">
+    <td>{{r.From}}</td>
+    <td>{{r.To}}</td>
+    <td>{{r.Speed}}</td>
+    <td>{{r.Time}}</td>
+  </tr>
   </tbody>
 </table>

@@ -106,8 +106,8 @@ export class NetworkService extends BaseService {
   private routesMapSubject = new BehaviorSubject<Map<string, Map<string, string>>>(new Map())
 
 
-  getSchedule(line:string, from: string, to: string): Observable<Route[]>{
-    return this.http.get<RouteDto[]>(`${this.url}/${line}/${from}/${to}/today`)
+  getSchedule(line:string, from: string, to: string, date: string): Observable<Route[]>{
+    return this.http.get<RouteDto[]>(`${this.url}/${line}/${from}/${to}/${date}`)
       .pipe(
         map((it,_)=>it.map(it=>toRoute(it)))
       )
