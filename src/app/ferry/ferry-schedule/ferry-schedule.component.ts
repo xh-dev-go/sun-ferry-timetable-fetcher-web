@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {NetworkService, Route} from "../sun-ferry/network.service";
 import {BaseComponent} from "../../base/base.component";
-import {BehaviorSubject, combineLatest, filter, from, map, take} from "rxjs";
+import {BehaviorSubject, combineLatest, debounce, debounceTime, filter, from, map, take, tap} from "rxjs";
 import {Scope} from "pyyqww_t1/dist/Scoping/Scope";
 import * as moment from 'moment';
+import {BusyManService} from "../../service/busy-man.service";
 
 @Component({
   selector: 'app-ferry-schedule',
@@ -24,7 +25,7 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
 
   schedule: Route[] = []
 
-  constructor(private networkService: NetworkService) {
+  constructor(private networkService: NetworkService, private busyManService: BusyManService) {
     super()
   }
 
@@ -120,18 +121,25 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
         ]
       )
         .subscribe(_ => {
-          const dateString = Scope.of(this.dateOpt.value).mapTo(it => moment(it).format("YYYYMMDD")).get()
+          const dateString = Scope.of(this.dateOpt.value).map(it => moment(it).format("YYYYMMDD")).get()
 
           this.networkService.getSchedule(
             NetworkService.toValue(this.selecting.value),
             NetworkService.toValue(this.from.value),
             NetworkService.toValue(this.to.value),
-            dateString!
+            dateString
           )
             .subscribe(it => this.schedule = it)
         })
     )
+
   }
+
+  busyStatus = this.busyManService.getBusyStream()
+    .pipe(
+      debounceTime(100)
+    )
+
 
   setDateAsToday() {
     this.dateOpt.next(Scope.of(new Date()).apply(it => it!.setHours(0, 0, 0)).get()!)

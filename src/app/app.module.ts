@@ -4,17 +4,18 @@ import {BrowserModule} from '@angular/platform-browser';
 import {AppComponent} from './app.component';
 import {RouterModule} from "@angular/router";
 import {FirstPageComponent} from './first-page/first-page.component';
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {FerryScheduleComponent} from './ferry/ferry-schedule/ferry-schedule.component';
-import { BaseComponent } from './base/base.component';
+import {BaseComponent} from './base/base.component';
 import {FormsModule} from "@angular/forms";
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import {MatTableModule} from "@angular/material/table";
 import {MatButtonModule} from "@angular/material/button";
 import {MatCommonModule} from "@angular/material/core";
+import {HttpInterceptorService} from "./interceptor/http-interceptor.service";
 
 @NgModule({
   declarations: [
@@ -40,7 +41,14 @@ import {MatCommonModule} from "@angular/material/core";
     MatSelectModule,
     MatTableModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpInterceptorService,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
