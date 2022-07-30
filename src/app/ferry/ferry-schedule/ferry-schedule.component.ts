@@ -95,8 +95,8 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
           const tmr = Scope.of(new Date(it)).apply(it => it!.setTime(it!.getTime() + dayMs)).get()
           const yesterday = Scope.of(new Date(it)).apply(it => it!.setTime(it!.getTime() - dayMs)).get()
 
-          this.dateYesterdayOpt.next(yesterday!)
-          this.dateTmrOpt.next(tmr!)
+          this.dateYesterdayOpt.next(yesterday)
+          this.dateTmrOpt.next(tmr)
         })
     )
 
