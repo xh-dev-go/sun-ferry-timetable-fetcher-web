@@ -1,9 +1,17 @@
-<mat-toolbar>
-  <span>Traffic Info</span>
-  <br>
-  <nav>
-    | <a class="button" routerLink="/ferry-schedule" routerLinkActive="active">Ferry Schedule</a> |
-    <a class="button" routerLink="/first-page" routerLinkActive="active">Routes</a> |
-  </nav>
-</mat-toolbar>
-<router-outlet></router-outlet>
+<div class="container-fluid">
+  <div class="navbar-nav ">
+    <a class="navbar-brand" href="#">Traffic Info</a>
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="button" routerLink="/ferry-schedule" routerLinkActive="active">Ferry Schedule</a>
+      </li>
+      <li class="nav-item">
+        <a class="button" routerLink="/first-page" routerLinkActive="active">Routes</a>
+      </li>
+
+    </ul>
+  </div>
+</div>
+<div class="container">
+  <router-outlet></router-outlet>
+</div>

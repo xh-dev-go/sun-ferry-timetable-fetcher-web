@@ -5,6 +5,7 @@ import {BehaviorSubject, combineLatest, debounce, debounceTime, filter, from, ma
 import {Scope} from "pyyqww_t1/dist/Scoping/Scope";
 import * as moment from 'moment';
 import {BusyManService} from "../../service/busy-man.service";
+import {faArrowRightArrowLeft, faCoffee, faSpinner} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-ferry-schedule',
@@ -12,6 +13,10 @@ import {BusyManService} from "../../service/busy-man.service";
   styleUrls: ['./ferry-schedule.component.css']
 })
 export class FerryScheduleComponent extends BaseComponent implements OnInit {
+
+  faArrowRightArrowLeft = faArrowRightArrowLeft
+  faSpinner = faSpinner
+
   routes: string[] = []
   selecting: BehaviorSubject<string> = new BehaviorSubject<string>("")
   lineOptions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
@@ -120,6 +125,9 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
           )
         ]
       )
+        .pipe(
+          debounceTime(10)
+        )
         .subscribe(_ => {
           const dateString = Scope.of(this.dateOpt.value).map(it => moment(it).format("YYYYMMDD")).get()
 
@@ -136,10 +144,14 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
   }
 
   busyStatus = this.busyManService.getBusyStream()
-    .pipe(
-      debounceTime(100)
-    )
+    .pipe( )
 
+  switch(){
+    let f = this.from.value
+    let t = this.to.value
+    this.from.next(t)
+    this.to.next(f)
+  }
 
   setDateAsToday() {
     this.dateOpt.next(Scope.of(new Date()).apply(it => it!.setHours(0, 0, 0)).get()!)

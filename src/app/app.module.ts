@@ -9,20 +9,16 @@ import {FerryScheduleComponent} from './ferry/ferry-schedule/ferry-schedule.comp
 import {BaseComponent} from './base/base.component';
 import {FormsModule} from "@angular/forms";
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatToolbarModule} from "@angular/material/toolbar";
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {MatSelectModule} from "@angular/material/select";
-import {MatTableModule} from "@angular/material/table";
-import {MatButtonModule} from "@angular/material/button";
-import {MatCommonModule} from "@angular/material/core";
 import {HttpInterceptorService} from "./interceptor/http-interceptor.service";
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
     AppComponent,
     FirstPageComponent,
     FerryScheduleComponent,
-    BaseComponent
+    BaseComponent,
   ],
   imports: [
     BrowserModule,
@@ -34,12 +30,8 @@ import {HttpInterceptorService} from "./interceptor/http-interceptor.service";
     ]),
     FormsModule,
     BrowserAnimationsModule,
-    MatToolbarModule,
-    MatFormFieldModule,
-    MatCommonModule,
-    MatButtonModule,
-    MatSelectModule,
-    MatTableModule
+    NgbModule,
+    FontAwesomeModule,
   ],
   providers: [
     {
