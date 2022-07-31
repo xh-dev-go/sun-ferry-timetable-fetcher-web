@@ -2,10 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {NetworkService, Route} from "../sun-ferry/network.service";
 import {BaseComponent} from "../../base/base.component";
 import {BehaviorSubject, combineLatest, debounce, debounceTime, filter, from, map, take, tap} from "rxjs";
-import {Scope} from "pyyqww_t1/dist/Scoping/Scope";
 import * as moment from 'moment';
 import {BusyManService} from "../../service/busy-man.service";
 import {faArrowRightArrowLeft, faCoffee, faSpinner} from "@fortawesome/free-solid-svg-icons";
+import {SingleSelectionModel} from "pyyqww_t1/dist/selectionModel/SingleSelection";
+import {Scopes} from "pyyqww_t1/dist/Scoping/Scopes";
 
 @Component({
   selector: 'app-ferry-schedule',
@@ -17,9 +18,10 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
   faArrowRightArrowLeft = faArrowRightArrowLeft
   faSpinner = faSpinner
 
-  routes: string[] = []
+  // routes: string[] = []
   selecting: BehaviorSubject<string> = new BehaviorSubject<string>("")
   lineOptions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
+  routeOptions: SingleSelectionModel<string> = SingleSelectionModel.NewWithDefault<string>([])
   fromOptions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
   from: BehaviorSubject<string> = new BehaviorSubject<string>("")
   toOptions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
@@ -27,6 +29,7 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
   dateYesterdayOpt = new BehaviorSubject<Date>(new Date())
   dateOpt = new BehaviorSubject<Date>(new Date())
   dateTmrOpt = new BehaviorSubject<Date>(new Date())
+  LAYOUT = 'EEE, d MMM YYYY'
 
   schedule: Route[] = []
 
@@ -40,8 +43,14 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
       this.networkService.getRoutes()
         .subscribe(it => {
           console.log(it)
-          this.routes = it
-          this.selecting.next(this.routes[0])
+          // this.routes = it
+          this.routeOptions = SingleSelectionModel.New(it)
+            .register(SingleSelectionModel.NewHook(
+              it => this.selecting.next(it.value().get()),
+              _ => {
+              }
+            ))
+          this.selecting.next(this.routeOptions.getCur().value().get())
         })
     )
 
@@ -52,7 +61,7 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
         )
         .subscribe(it => {
             this.networkService.getLineOptions(NetworkService.toDisplay(this.selecting.value))
-              .subscribe(it => {
+              .subscribe((it) => {
                 this.lineOptions.next(it)
               })
           }
@@ -69,6 +78,7 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
 
           this.to.next(stops[1])
           this.toOptions.next(stops)
+
         })
     )
 
@@ -98,8 +108,8 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
         )
         .subscribe(it => {
           const dayMs = 86400000
-          const tmr = Scope.of(new Date(it)).apply(it => it!.setTime(it!.getTime() + dayMs)).get()
-          const yesterday = Scope.of(new Date(it)).apply(it => it!.setTime(it!.getTime() - dayMs)).get()
+          const tmr = Scopes.of(new Date(it)).apply(it => it!.setTime(it!.getTime() + dayMs)).get()
+          const yesterday = Scopes.of(new Date(it)).apply(it => it!.setTime(it!.getTime() - dayMs)).get()
 
           this.dateYesterdayOpt.next(yesterday)
           this.dateTmrOpt.next(tmr)
@@ -129,7 +139,7 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
           debounceTime(10)
         )
         .subscribe(_ => {
-          const dateString = Scope.of(this.dateOpt.value).map(it => moment(it).format("YYYYMMDD")).get()
+          const dateString = Scopes.of(this.dateOpt.value).map(it => moment(it).format("YYYYMMDD")).get()
 
           this.networkService.getSchedule(
             NetworkService.toValue(this.selecting.value),
@@ -144,9 +154,9 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
   }
 
   busyStatus = this.busyManService.getBusyStream()
-    .pipe( )
+    .pipe()
 
-  switch(){
+  switch() {
     let f = this.from.value
     let t = this.to.value
     this.from.next(t)
@@ -154,6 +164,6 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
   }
 
   setDateAsToday() {
-    this.dateOpt.next(Scope.of(new Date()).apply(it => it!.setHours(0, 0, 0)).get()!)
+    this.dateOpt.next(Scopes.of(new Date()).apply(it => it!.setHours(0, 0, 0)).get()!)
   }
 }
