@@ -91,7 +91,11 @@ export class NetworkService extends BaseService {
 
   constructor(private http: HttpClient) {
     super()
-    this.url = `${environment.host}/v1/ferry/sun-ferry`
+    if(!environment.production){
+      this.url = `${environment.host}/api/v1/ferry/sun-ferry`
+    } else {
+      this.url = `${window.location.host}/api/v1/ferry/sun-ferry`
+    }
     this.subscriptions.push(
       this.http.get<any>(`${this.url}/service-map`)
         .pipe(
