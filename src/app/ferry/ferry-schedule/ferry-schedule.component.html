@@ -18,38 +18,36 @@
 <div class="row">
   <div class="input-group mb-3">
     <span class="input-group-text">Route</span>
-    <select [ngModel]="selecting|async" (ngModelChange)="selecting.next($event)">
+    <select class="form-select" [ngModel]="selecting|async" (ngModelChange)="selecting.next($event)">
       <option *ngFor="let route of routes" [value]="route">
         {{route}}
       </option>
     </select>
   </div>
-  <div>
-    <div class="input-group">
-      <span class="input-group-text">Direction</span>
-      <select [ngModel]="from|async" (ngModelChange)="from.next($event)">
-        <option *ngFor="let line of fromOptions|async" [value]="line">{{line}}</option>
-      </select>
-      <select [ngModel]="to|async" (ngModelChange)="to.next($event)">
-        <option *ngFor="let line of toOptions|async" [value]="line">{{line}}</option>
-      </select>
-      <button class="input-group-text">
-        <fa-icon class="fa" [icon]="faArrowRightArrowLeft" (click)="switch()"></fa-icon>
-        Switch
-      </button>
-    </div>
+  <div class="input-group">
+    <span class="input-group-text">Direction</span>
+    <select class="form-select" [ngModel]="from|async" (ngModelChange)="from.next($event)">
+      <option *ngFor="let line of fromOptions|async" [value]="line">{{line}}</option>
+    </select>
+    <select class="form-select" [ngModel]="to|async" (ngModelChange)="to.next($event)">
+      <option *ngFor="let line of toOptions|async" [value]="line">{{line}}</option>
+    </select>
+    <button class="input-group-text" (click)="switch()">
+      <fa-icon class="fa" [icon]="faArrowRightArrowLeft"></fa-icon>
+      Switch
+    </button>
   </div>
 </div>
 <br>
 <table class="table table-success table-striped-columns table-hover">
   <thead>
-    <tr>
-      <th>From</th>
-      <th>TO</th>
-      <th>Speed</th>
-      <th>Time</th>
-      <th>Remark</th>
-    </tr>
+  <tr>
+    <th>From</th>
+    <th>TO</th>
+    <th>Speed</th>
+    <th>Time</th>
+    <th>Remark</th>
+  </tr>
   </thead>
   <tbody class="table-group-divider">
   <tr *ngFor="let r of schedule">
