@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {NetworkService, Route} from "../sun-ferry/network.service";
 import {BaseComponent} from "../../base/base.component";
-import {BehaviorSubject, combineLatest, debounce, debounceTime, filter, from, map, take, tap} from "rxjs";
+import {BehaviorSubject, combineLatest, debounceTime, filter, map, merge} from "rxjs";
 import * as moment from 'moment';
 import {BusyManService} from "../../service/busy-man.service";
-import {faArrowRightArrowLeft, faCoffee, faSpinner} from "@fortawesome/free-solid-svg-icons";
+import {faArrowRightArrowLeft, faSpinner} from "@fortawesome/free-solid-svg-icons";
 import {SingleSelectionModel} from "pyyqww_t1/dist/selectionModel/SingleSelection";
 import {Scopes} from "pyyqww_t1/dist/Scoping/Scopes";
+import {LocalStorageService} from "../../service/local-storage.service";
 
 @Component({
   selector: 'app-ferry-schedule',
@@ -19,6 +20,7 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
   faSpinner = faSpinner
 
   // routes: string[] = []
+  preSelecting: BehaviorSubject<string> = new BehaviorSubject<string>("")
   selecting: BehaviorSubject<string> = new BehaviorSubject<string>("")
   lineOptions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
   routeOptions: SingleSelectionModel<string> = SingleSelectionModel.NewWithDefault<string>([])
@@ -37,25 +39,54 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
     super()
   }
 
+  key: string = "ferry-schedule/route/last"
+
   override ngOnInit() {
     super.ngOnInit();
     this.subscriptions.push(
       this.networkService.getRoutes()
-        .subscribe(it => {
+        .subscribe((it) => {
           console.log(it)
-          // this.routes = it
+          if (LocalStorageService.exists(this.key)) {
+            const value = LocalStorageService.getString(this.key)
+            this.selecting.next(value!)
+          } else {
+            this.selecting.next(it[0])
+          }
           this.routeOptions = SingleSelectionModel.New(it)
             .register(SingleSelectionModel.NewHook(
-              it => this.selecting.next(it.value().get()),
+              it=>{},
+              it => this.preSelecting.next(it.value().get()),
               _ => {
               }
             ))
-          this.selecting.next(this.routeOptions.getCur().value().get())
+          // this.routeOptions = SingleSelectionModel.New(it)
+          //   .register(SingleSelectionModel.NewHook(
+          //     it => this.selecting.next(it.value().get()),
+          //     _ => {
+          //     }
+          //   ))
         })
     )
 
     this.subscriptions.push(
-      this.selecting
+      this.preSelecting
+        .pipe(
+          filter((it)=>Scopes.ofNullable(it).exists() && it!=="")
+        )
+        .subscribe((it) => {
+        const value = LocalStorageService.getString(this.key)
+        if (value !== it) {
+          LocalStorageService.set(this.key, it)
+        }
+      })
+    )
+
+    this.subscriptions.push(
+      merge(
+        this.preSelecting,
+        this.selecting
+      )
         .pipe(
           filter(it => it !== "")
         )
@@ -67,6 +98,26 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
           }
         )
     )
+    // this.subscriptions.push(
+    //   this.selecting
+    //     .pipe(
+    //       filter(it => it !== "")
+    //     )
+    //     .subscribe(it => {
+    //       if(LocalStorageService.exists(this.key)){
+    //         const value = LocalStorageService.getString(this.key)
+    //         if(value !== it){
+    //           LocalStorageService.set(this.key, it)
+    //
+    //         }
+    //       }
+    //         this.networkService.getLineOptions(NetworkService.toDisplay(this.selecting.value))
+    //           .subscribe((it) => {
+    //             this.lineOptions.next(it)
+    //           })
+    //       }
+    //     )
+    // )
 
     this.subscriptions.push(
       this.lineOptions.pipe(
