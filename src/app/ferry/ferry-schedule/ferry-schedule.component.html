@@ -39,20 +39,18 @@
   </div>
 </div>
 <br>
+{{this.selecting|async}}: {{this.from|async}} - {{this.to|async}}
 <table class="table table-success table-striped-columns table-hover">
   <thead>
   <tr>
-    <th>From</th>
-    <th>TO</th>
     <th>Speed</th>
     <th>Time</th>
     <th>Remark</th>
   </tr>
   </thead>
+
   <tbody class="table-group-divider">
   <tr *ngFor="let r of schedule">
-    <td>{{r.From}}</td>
-    <td>{{r.To}}</td>
     <td>{{r.Speed}}</td>
     <td>{{r.Time}}</td>
     <td>{{r.Remark}}</td>
