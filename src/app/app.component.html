@@ -1,15 +1,13 @@
 <div class="container-fluid">
-  <div class="navbar-nav ">
-    <a class="navbar-brand" href="#">Traffic Info</a>
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="button" routerLink="/ferry-schedule" routerLinkActive="active">Ferry Schedule</a>
-      </li>
-      <li class="nav-item">
-        <a class="button" routerLink="/first-page" routerLinkActive="active">Routes</a>
-      </li>
-
-    </ul>
+  <div class="navbar-nav">
+    <div>
+      <a class="navbar-brand" href="#">
+        <fa-icon class="fa-2x" [icon]="faFerry" href="#"></fa-icon>
+      </a>
+      <a class="nav-item btn" routerLink="/ferry-schedule" routerLinkActive="active">Ferry Schedule</a>
+      <a class="nav-item btn" routerLink="/next-ferry" routerLinkActive="active">Next Ferry</a>
+      <a class="nav-item btn" routerLink="/first-page" routerLinkActive="active">Routes</a>
+    </div>
   </div>
 </div>
 <div class="container">

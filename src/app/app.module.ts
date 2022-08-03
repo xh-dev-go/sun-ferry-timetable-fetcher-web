@@ -11,7 +11,9 @@ import {FormsModule} from "@angular/forms";
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpInterceptorService} from "./interceptor/http-interceptor.service";
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {SearchPanelComponent} from './ferry/search-panel/search-panel.component';
+import {NextFerryComponent} from "./ferry/next-ferry/next-ferry.component";
 
 @NgModule({
   declarations: [
@@ -19,6 +21,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     FirstPageComponent,
     FerryScheduleComponent,
     BaseComponent,
+    NextFerryComponent,
+    SearchPanelComponent,
   ],
   imports: [
     BrowserModule,
@@ -26,7 +30,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     RouterModule.forRoot([
       {path: "first-page", component: FirstPageComponent},
       {path: "ferry-schedule", component: FerryScheduleComponent},
-      {path: "", redirectTo: "/ferry-schedule", pathMatch: "full"}
+      {path: "next-ferry", component: NextFerryComponent},
+      {path: "", redirectTo: "/next-ferry", pathMatch: "full"}
     ]),
     FormsModule,
     BrowserAnimationsModule,

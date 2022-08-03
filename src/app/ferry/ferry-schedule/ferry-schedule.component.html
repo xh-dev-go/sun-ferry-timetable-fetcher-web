@@ -1,42 +1,9 @@
 <div *ngIf="busyStatus|async">
   <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
 </div>
-<div class="btn-group">
-  <button class="btn btn-secondary" (click)="dateOpt.next(dateYesterdayOpt.value)">
-    {{dateYesterdayOpt|async|date: LAYOUT}}
-  </button>
-  <button class="btn btn-success">
-    {{dateOpt|async|date: LAYOUT}}
-  </button>
-  <button class="btn btn-secondary" (click)="dateOpt.next(dateTmrOpt.value)">
-    {{dateTmrOpt|async|date: LAYOUT}}
-  </button>
-  <button class="btn btn-danger" (click)="setDateAsToday()">
-    Today
-  </button>
-</div>
-<div class="row">
-  <div class="btn-group">
-    <button class="btn" [ngClass]="{'btn-secondary': !item.isSelected(), 'btn-success': item.isSelected()}" *ngFor="let item of routeOptions.getAll()" (click)="item.select()">
-      {{item.value().get()}}
-    </button>
-  </div>
-  <div class="input-group">
-    <span class="input-group-text">Direction</span>
-    <select class="form-select" [ngModel]="from|async" (ngModelChange)="from.next($event)">
-      <option *ngFor="let line of fromOptions|async" [value]="line">{{line}}</option>
-    </select>
-    <select class="form-select" [ngModel]="to|async" (ngModelChange)="to.next($event)">
-      <option *ngFor="let line of toOptions|async" [value]="line">{{line}}</option>
-    </select>
-    <button class="input-group-text" (click)="switch()">
-      <fa-icon class="fa" [icon]="faArrowRightArrowLeft"></fa-icon>
-      Switch
-    </button>
-  </div>
-</div>
+<app-search-panel (searchResult)="searchResult($event)"></app-search-panel>
 <br>
-{{this.preSelecting|async}}: {{this.from|async}} - {{this.to|async}}
+{{this.lane}}: {{this.from}} - {{this.to}}
 <table class="table table-success table-striped-columns table-hover">
   <thead>
   <tr>
