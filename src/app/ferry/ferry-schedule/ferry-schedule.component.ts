@@ -12,7 +12,6 @@ import {SearchPanelOutput} from "../search-panel/search-panel.component";
 })
 export class FerryScheduleComponent extends BaseComponent implements OnInit {
 
-  faSpinner = faSpinner
 
 
   searchResult(result: SearchPanelOutput) {
@@ -28,10 +27,7 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
   to: string = ""
   lane: string = ""
 
-  constructor(private networkService: NetworkService, private busyManService: BusyManService) {
+  constructor(private networkService: NetworkService) {
     super()
   }
-
-  busyStatus = this.busyManService.getBusyStream()
-    .pipe()
 }

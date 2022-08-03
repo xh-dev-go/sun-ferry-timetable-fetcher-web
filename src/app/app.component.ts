@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { faFerry} from "@fortawesome/free-solid-svg-icons";
+import { faFerry, faSpinner} from "@fortawesome/free-solid-svg-icons";
+import {BusyManService} from "./service/busy-man.service";
 
 @Component({
   selector: 'app-root',
@@ -9,4 +10,12 @@ import { faFerry} from "@fortawesome/free-solid-svg-icons";
 export class AppComponent {
   title = 'web';
   faFerry = faFerry
+  faSpinner = faSpinner
+
+
+  constructor(private busyManService: BusyManService) {
+  }
+
+  busyStatus = this.busyManService.getBusyStream()
+    .pipe()
 }

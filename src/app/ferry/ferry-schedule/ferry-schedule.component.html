@@ -1,6 +1,3 @@
-<div *ngIf="busyStatus|async">
-  <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
-</div>
 <app-search-panel (searchResult)="searchResult($event)"></app-search-panel>
 <br>
 {{this.lane}}: {{this.from}} - {{this.to}}
