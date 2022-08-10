@@ -1,12 +1,11 @@
-<p>search-panel works!</p>
 <div class="btn-group">
-  <button class="btn btn-secondary" (click)="dateOpt.next(dateYesterdayOpt.value)">
+  <button class="btn btn-secondary" (click)="dateOpt.next(this.yesterday(dateOpt.value))">
     {{dateYesterdayOpt|async|date: LAYOUT}}
   </button>
   <button class="btn btn-success">
     {{dateOpt|async|date: LAYOUT}}
   </button>
-  <button class="btn btn-secondary" (click)="dateOpt.next(dateTmrOpt.value)">
+  <button class="btn btn-secondary" (click)="dateOpt.next(this.tmr(dateOpt.value))">
     {{dateTmrOpt|async|date: LAYOUT}}
   </button>
   <button class="btn btn-danger" (click)="setDateAsToday()">
@@ -15,7 +14,7 @@
 </div>
 <div class="row">
   <div class="btn-group">
-    <button class="btn" [ngClass]="{'btn-secondary': !item.isSelected(), 'btn-success': item.isSelected()}" *ngFor="let item of routeOptions.getAll()" (click)="item.select()">
+    <button class="btn" [ngClass]="{'btn-secondary': !item.isSelected(), 'btn-success': item.isSelected()}" *ngFor="let item of routeOptions|async" (click)="item.select()">
       {{item.value().get()}}
     </button>
   </div>

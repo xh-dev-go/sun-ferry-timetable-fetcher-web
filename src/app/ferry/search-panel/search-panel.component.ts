@@ -1,5 +1,5 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {BehaviorSubject, combineLatest, debounceTime, filter, map, merge} from "rxjs";
+import {BehaviorSubject, combineLatest, debounceTime, filter, map, merge, of, Subject, switchMap, take} from "rxjs";
 import {Scopes} from "pyyqww_t1/dist/Scoping/Scopes";
 import {faArrowRightArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import {BaseComponent} from "../../base/base.component";
@@ -19,6 +19,12 @@ export interface SearchPanelOutput {
   schedule: Route[]
 }
 
+export interface Pair {
+  from: string,
+  value: string
+
+}
+
 @Component({
   selector: 'app-search-panel',
   templateUrl: './search-panel.component.html',
@@ -26,22 +32,69 @@ export interface SearchPanelOutput {
 })
 export class SearchPanelComponent extends BaseComponent implements OnInit {
   faArrowRightArrowLeft = faArrowRightArrowLeft
+  dayMs = 86400000
 
   @Output()
   searchResult: EventEmitter<SearchPanelOutput> = new EventEmitter<SearchPanelOutput>()
+
+  // Default value of the selection in DB
+  initState = of(1).pipe(
+    switchMap((_) => {
+      // Set the default
+      if (LocalStorageService.exists(this.key)) {
+        const value = LocalStorageService.getString(this.key)
+        return of({from: "default", value} as Pair)
+      } else {
+        return this.routeOptionsModel.pipe(
+          take(1),
+          map<SingleSelectionModel<string>, Pair>(
+            (it, _) => {
+              return {from: "rom", value: it.findOptions()[0].value().get()}
+            }
+          )
+        )
+      }
+    }),
+    take(1)
+  )
 
   constructor(private networkService: NetworkService) {
     super()
   }
 
-  preSelecting: BehaviorSubject<string> = new BehaviorSubject<string>("")
-  selecting: BehaviorSubject<string> = new BehaviorSubject<string>("")
+  userSelected = new Subject<string>()
+  userSelectObservable = this.userSelected.pipe(
+    filter((it) => it !== ""),
+    map<string,Pair>((it) => {return {from:"user-select", value:it}})
+  )
+
+  anySelection = merge(
+    this.userSelectObservable,
+    this.initState
+  )
+    .pipe<Pair>(
+      filter(it => it.value !== "")
+    )
+
   lineOptions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
-  routeOptions: SingleSelectionModel<string> = SingleSelectionModel.NewWithDefault<string>([])
-  dateYesterdayOpt = new BehaviorSubject<Date>(new Date())
+
+  routeOptionsModel: Subject<SingleSelectionModel<string>> = new Subject<SingleSelectionModel<string>>()
+  routeOptions = this.routeOptionsModel.pipe(
+    map((it) => it.getAll())
+  )
+
   LAYOUT = 'EEE, d MMM YYYY'
-  dateOpt = new BehaviorSubject<Date>(new Date())
-  dateTmrOpt = new BehaviorSubject<Date>(new Date())
+
+
+  /* Set the date bar */
+  tmr = (date: Date) => Scopes.of(new Date(date)).apply((it) => it.setTime(it.getTime() + this.dayMs)).get()
+  yesterday = (date: Date) => Scopes.of(new Date(date)).apply((it) => it.setTime(it.getTime() - this.dayMs)).get()
+
+  dateOpt = new BehaviorSubject<Date>(new Date()) //today
+  dateYesterdayOpt = this.dateOpt.pipe(map((it) => this.yesterday(it)))
+  dateTmrOpt = this.dateOpt.pipe(map((it) => this.tmr(it)))
+
+  /* Set the to / from bar */
   fromOptions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
   from: BehaviorSubject<string> = new BehaviorSubject<string>("")
   toOptions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
@@ -55,31 +108,29 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
 
   override ngOnInit() {
     super.ngOnInit();
-    this.subscriptions.push(
-      this.networkService.getRoutes()
-        .subscribe((it) => {
-          console.log(it)
-          if (LocalStorageService.exists(this.key)) {
-            const value = LocalStorageService.getString(this.key)
-            this.selecting.next(value!)
-          } else {
-            this.selecting.next(it[0])
-          }
-          this.routeOptions = SingleSelectionModel.New(it)
+
+
+    this.sub(
+      this.networkService.getRoutes() // when start get all routes
+        .subscribe(it => {
+          console.log("Load all routes" + it)
+
+          this.routeOptionsModel.next(SingleSelectionModel.New(it)
             .register(SingleSelectionModel.NewHook(
-              it => {
+              _ => {
               },
-              it => this.preSelecting.next(it.value().get()),
+              value => this.userSelected.next(value.value().get()), // selecting an item, user select have new value
               _ => {
               }
-            ))
+            )))
         })
     )
 
-    this.subscriptions.push(
-      this.preSelecting
+    this.sub(
+      // when user select, save to the history
+      this.userSelected
         .pipe(
-          filter((it) => Scopes.ofNullable(it).exists() && it !== "")
+          filter((it) => it !== "")
         )
         .subscribe((it) => {
           const value = LocalStorageService.getString(this.key)
@@ -89,23 +140,18 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
         })
     )
 
-    this.subscriptions.push(
-      merge(
-        this.preSelecting,
-        this.selecting
-      )
-        .pipe(
-          filter(it => it !== "")
-        )
-        .subscribe(it => {
-            this.networkService.getLineOptions(NetworkService.toDisplay(this.selecting.value))
+
+    this.sub(
+      this.anySelection
+        .subscribe((line) => {
+            this.networkService.getLineOptions(NetworkService.toDisplay(line.value))
               .subscribe((it) => {
                 this.lineOptions.next(it)
               })
           }
         )
     )
-    this.subscriptions.push(
+    this.sub(
       this.lineOptions.pipe(
         filter(it => it.length > 0)
       )
@@ -138,55 +184,36 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
           }
         })
     )
-    this.subscriptions.push(
-      this.dateOpt
-        .pipe(
-          filter(it => it !== null && it !== undefined)
-        )
-        .subscribe(it => {
-          const dayMs = 86400000
-          const tmr = Scopes.of(new Date(it)).apply(it => it!.setTime(it!.getTime() + dayMs)).get()
-          const yesterday = Scopes.of(new Date(it)).apply(it => it!.setTime(it!.getTime() - dayMs)).get()
-
-          this.dateYesterdayOpt.next(yesterday)
-          this.dateTmrOpt.next(tmr)
-        })
-    )
 
     this.subscriptions.push(
       combineLatest([
-          this.to.pipe(
-            filter(it => it !== null),
-            filter(it => it !== undefined),
-            map((it, _) => 1)
-          ),
-          this.from.pipe(
-            filter(it => it !== null),
-            filter(it => it !== undefined),
-            map((it, _) => 1)
-          ),
-          this.dateOpt.pipe(
-            filter(it => it !== null),
-            filter(it => it !== undefined),
-            map((it, _) => 1)
-          )
+          this.to.pipe(filter((it) => it !== null && it !== undefined && it !== "")),
+          this.from.pipe(filter((it) => it !== null && it !== undefined && it !== "")),
+          this.dateOpt,
+          this.anySelection
         ]
       )
         .pipe(
-          debounceTime(10)
+          debounceTime(10),
         )
-        .subscribe(_ => {
-          const dateString = Scopes.of(this.dateOpt.value).map(it => moment(it).format("YYYYMMDD")).get()
+        .subscribe((it) => {
+          const to = it[0]
+          const from = it[1]
+          const dateOpt = it[2]
+          const dest = it[3]
+
+          const dateString = Scopes.of(dateOpt).map(it => moment(it).format("YYYYMMDD")).get()
 
           this.networkService.getSchedule(
-            NetworkService.toValue(this.selecting.value),
-            NetworkService.toValue(this.from.value),
-            NetworkService.toValue(this.to.value),
+            NetworkService.toValue(dest.value),
+            NetworkService.toValue(from),
+            NetworkService.toValue(to),
             dateString
           )
-            .subscribe(it => {
+            .subscribe((it) => {
+
               this.searchResult.next({
-                lane: `${this.selecting.value} Lane`,
+                lane: `${dest} Lane`,
                 from: this.from.value,
                 to: this.to.value,
                 schedule: it
@@ -194,7 +221,6 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
             })
         })
     )
-
   }
 
   switch() {

@@ -16,4 +16,8 @@ export class BaseService implements OnDestroy {
       }
     })
   }
+
+  sub(sub: Subscription){
+    this.subscriptions.push(sub)
+  }
 }

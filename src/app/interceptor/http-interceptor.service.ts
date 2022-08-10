@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {BusyManService} from "../service/busy-man.service";
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse} from "@angular/common/http";
-import {Observable, tap} from "rxjs";
+import {catchError, Observable, tap} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +19,13 @@ export class HttpInterceptorService implements HttpInterceptor{
           console.log(`[Response]: ${it.url}`)
           job.doneMyJob()
         }
+      }),
+      catchError((err)=>{
+        console.log(err)
+        job.doneMyJob()
+        throw err
       })
     )
+
   }
 }
