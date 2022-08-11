@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NetworkService, Route} from "../sun-ferry/network.service";
 import {BaseComponent} from "../../base/base.component";
-import {BusyManService} from "../../service/busy-man.service";
-import {faSpinner} from "@fortawesome/free-solid-svg-icons";
 import {SearchPanelOutput} from "../search-panel/search-panel.component";
 
 @Component({

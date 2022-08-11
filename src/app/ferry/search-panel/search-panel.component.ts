@@ -1,9 +1,21 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {BehaviorSubject, combineLatest, debounceTime, filter, map, merge, of, Subject, switchMap, take} from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  filter,
+  map,
+  merge,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  take, tap
+} from "rxjs";
 import {Scopes} from "pyyqww_t1/dist/Scoping/Scopes";
 import {faArrowRightArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import {BaseComponent} from "../../base/base.component";
-import {SingleSelectionModel} from "pyyqww_t1/dist/selectionModel/SingleSelection";
+import {Selection, SingleSelectionModel} from "pyyqww_t1/dist/selectionModel/SingleSelection";
 import {LocalStorageService} from "../../service/local-storage.service";
 import {NetworkService, Route} from "../sun-ferry/network.service";
 import * as moment from "moment";
@@ -22,7 +34,77 @@ export interface SearchPanelOutput {
 export interface Pair {
   from: string,
   value: string
+}
 
+export class ToFrom {
+  fromOption: string[] = []
+  from = ""
+  toOption: string[] = []
+  to = ""
+
+  updateTo(to: string): ToFrom {
+    if (this.toOption.includes(to)) {
+      if (to === this.from) {
+        const fromOptions = this.fromOption.filter((it) => it !== this.to)
+        if (fromOptions.length > 0) {
+          return ToFrom.of(this.fromOption, fromOptions[0], this.toOption, to)
+        } else {
+          throw Error("swap to from option")
+        }
+      } else {
+        return ToFrom.of(this.fromOption, this.from, this.toOption, to)
+      }
+    } else {
+      throw Error("to not contains")
+    }
+  }
+
+  updateFrom(from: string): ToFrom {
+    if (this.fromOption.includes(from)) {
+      if (from === this.to) {
+        const toOptions = this.toOption.filter((it) => it !== from)
+        if (toOptions.length > 0) {
+          return ToFrom.of(this.fromOption, from, this.toOption, toOptions[0])
+        } else {
+          throw Error("swap to to option")
+        }
+      } else {
+        return ToFrom.of(this.fromOption, from, this.toOption, this.to)
+      }
+    } else {
+      throw Error("from not contains")
+    }
+  }
+
+  switch(): ToFrom {
+    return this.updateFrom(this.to).updateTo(this.from)
+  }
+
+  constructor(fromOption: string[], from: string, toOption: string[], to: string) {
+    this.fromOption = fromOption
+    this.toOption = toOption
+    this.from = from;
+    this.to = to;
+    if(from === to){
+      throw Error("From and To is the same")
+    }
+  }
+
+  static empty(): ToFrom {
+    return new ToFrom([], "", [], "")
+  }
+
+  static of(fromOption: string[], from: string, toOption: string[], to: string): ToFrom {
+    return new ToFrom(fromOption, from, toOption, to)
+  }
+
+  isEmpty(): boolean {
+    return this.from === "" || this.to === ""
+  }
+
+  nonEmpty(): boolean {
+    return !this.isEmpty()
+  }
 }
 
 @Component({
@@ -37,6 +119,8 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
   @Output()
   searchResult: EventEmitter<SearchPanelOutput> = new EventEmitter<SearchPanelOutput>()
 
+  // --------------- Init Stages---------------------
+  //
   // Default value of the selection in DB
   initState = of(1).pipe(
     switchMap((_) => {
@@ -58,14 +142,15 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
     take(1)
   )
 
-  constructor(private networkService: NetworkService) {
-    super()
-  }
+  // --------------- Second Stages---------------------
+  //
 
-  userSelected = new Subject<string>()
-  userSelectObservable = this.userSelected.pipe(
+  userSelectedRoute = new Subject<string>() // user select route
+  userSelectObservable = this.userSelectedRoute.pipe(
     filter((it) => it !== ""),
-    map<string,Pair>((it) => {return {from:"user-select", value:it}})
+    map<string, Pair>((it) => {
+      return {from: "user-select", value: it}
+    })
   )
 
   anySelection = merge(
@@ -76,33 +161,60 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
       filter(it => it.value !== "")
     )
 
-  lineOptions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
+  lineOptions: Observable<string[]> = this.anySelection
+    .pipe(
+      switchMap((line) => {
+        return this.networkService.getLineOptions(NetworkService.toDisplay(line.value))
+      })
+    )
 
   routeOptionsModel: Subject<SingleSelectionModel<string>> = new Subject<SingleSelectionModel<string>>()
-  routeOptions = this.routeOptionsModel.pipe(
-    map((it) => it.getAll())
+
+  routeOptions: Observable<Selection<string>[]> = this.routeOptionsModel.pipe(
+    filter((it) => it !== null),
+    map((it) => it.getAll()),
+    tap((it) => {
+      console.log(["latest route", ...it.map(it => it.value().get())].reduce((a, b) => `${a}\n${b}`))
+    })
   )
+
+  /* Set the to / from bar */
+  toFrom: Subject<ToFrom> = new Subject<ToFrom>()
+  toFromObs:Observable<ToFrom> = merge(
+    this.toFrom.pipe(filter((it) => it.nonEmpty())),
+    this.lineOptions.pipe(
+      filter(it => it.length > 0),
+      map((it) => ToFrom.of(it, it[0], it, it[1]))
+    )
+  )
+
+  constructor(private networkService: NetworkService) {
+    super()
+  }
+
 
   LAYOUT = 'EEE, d MMM YYYY'
 
 
   /* Set the date bar */
+  toDay = () => new Date()
   tmr = (date: Date) => Scopes.of(new Date(date)).apply((it) => it.setTime(it.getTime() + this.dayMs)).get()
   yesterday = (date: Date) => Scopes.of(new Date(date)).apply((it) => it.setTime(it.getTime() - this.dayMs)).get()
 
   dateOpt = new BehaviorSubject<Date>(new Date()) //today
-  dateYesterdayOpt = this.dateOpt.pipe(map((it) => this.yesterday(it)))
-  dateTmrOpt = this.dateOpt.pipe(map((it) => this.tmr(it)))
+  dateToday = this.dateOpt.pipe(
+    map((it) =>
+      Scopes.of(new Date(it)).apply(it => it!.setHours(0, 0, 0)).get()!
+    )
+  )
+  dateYesterdayOpt = this.dateToday.pipe(map((it) => this.yesterday(it)))
+  dateTmrOpt = this.dateToday.pipe(map((it) => this.tmr(it)))
 
-  /* Set the to / from bar */
-  fromOptions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
-  from: BehaviorSubject<string> = new BehaviorSubject<string>("")
-  toOptions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
-  to: BehaviorSubject<string> = new BehaviorSubject<string>("")
+  toFromObservable = this.lineOptions.pipe(
+    filter(it => it.length > 0),
+    map((listOption) => ToFrom.of(listOption, listOption[0], listOption, listOption[1]))
+  )
 
-  setDateAsToday() {
-    this.dateOpt.next(Scopes.of(new Date()).apply(it => it!.setHours(0, 0, 0)).get()!)
-  }
 
   key: string = "ferry-schedule/route/last"
 
@@ -111,24 +223,19 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
 
 
     this.sub(
-      this.networkService.getRoutes() // when start get all routes
-        .subscribe(it => {
-          console.log("Load all routes" + it)
-
-          this.routeOptionsModel.next(SingleSelectionModel.New(it)
-            .register(SingleSelectionModel.NewHook(
-              _ => {
-              },
-              value => this.userSelected.next(value.value().get()), // selecting an item, user select have new value
-              _ => {
-              }
-            )))
+      combineLatest([this.routeOptionsModel, this.initState])
+        .subscribe((it) => {
+          const model: SingleSelectionModel<string> = it[0]
+          const pair: Pair = it[1]
+          if (pair.from === "default") {
+            model.select(pair.value)
+          }
         })
     )
 
     this.sub(
       // when user select, save to the history
-      this.userSelected
+      this.userSelectedRoute
         .pipe(
           filter((it) => it !== "")
         )
@@ -140,55 +247,10 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
         })
     )
 
-
-    this.sub(
-      this.anySelection
-        .subscribe((line) => {
-            this.networkService.getLineOptions(NetworkService.toDisplay(line.value))
-              .subscribe((it) => {
-                this.lineOptions.next(it)
-              })
-          }
-        )
-    )
-    this.sub(
-      this.lineOptions.pipe(
-        filter(it => it.length > 0)
-      )
-        .subscribe(stops => {
-          this.from.next(stops[0])
-          this.fromOptions.next(stops)
-
-          this.to.next(stops[1])
-          this.toOptions.next(stops)
-
-        })
-    )
-
-    this.subscriptions.push(
-      this.from
-        .subscribe(fromStop => {
-          if (fromStop === this.to.value) {
-            let next = this.toOptions.value.filter(it => it !== fromStop)[0]
-            this.to.next(next)
-          }
-        })
-    )
-
-    this.subscriptions.push(
-      this.to
-        .subscribe(toStop => {
-          if (toStop === this.from.value) {
-            let next = this.fromOptions.value.filter(it => it !== toStop)[0]
-            this.from.next(next)
-          }
-        })
-    )
-
+    // Any change will trigger refresh
     this.subscriptions.push(
       combineLatest([
-          this.to.pipe(filter((it) => it !== null && it !== undefined && it !== "")),
-          this.from.pipe(filter((it) => it !== null && it !== undefined && it !== "")),
+          this.toFromObs.pipe(filter((it) => it.nonEmpty())),
           this.dateOpt,
           this.anySelection
         ]
@@ -197,10 +259,10 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
           debounceTime(10),
         )
         .subscribe((it) => {
-          const to = it[0]
-          const from = it[1]
-          const dateOpt = it[2]
-          const dest = it[3]
+          const to = it[0].to
+          const from = it[0].from
+          const dateOpt = it[1]
+          const dest = it[2]
 
           const dateString = Scopes.of(dateOpt).map(it => moment(it).format("YYYYMMDD")).get()
 
@@ -214,20 +276,30 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
 
               this.searchResult.next({
                 lane: `${dest} Lane`,
-                from: this.from.value,
-                to: this.to.value,
+                from,
+                to,
                 schedule: it
               })
             })
         })
     )
+
+    this.sub(
+      this.networkService.getRoutes() // when start get all routes
+        .subscribe(it => {
+          console.log("Load all routes" + it)
+
+          this.routeOptionsModel.next(SingleSelectionModel.New(it)
+            .register(SingleSelectionModel.NewHook(
+              _ => {
+              },
+              value => this.userSelectedRoute.next(value.value().get()), // selecting an item, user select have new value
+              _ => {
+              }
+            )))
+        })
+    )
   }
 
-  switch() {
-    let f = this.from.value
-    let t = this.to.value
-    this.from.next(t)
-    this.to.next(f)
-  }
 
 }
