@@ -10,19 +10,16 @@ import {
   of,
   Subject,
   switchMap,
-  take, tap
+  take,
+  tap
 } from "rxjs";
 import {Scopes} from "pyyqww_t1/dist/Scoping/Scopes";
 import {faArrowRightArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import {BaseComponent} from "../../base/base.component";
 import {Selection, SingleSelectionModel} from "pyyqww_t1/dist/selectionModel/SingleSelection";
 import {LocalStorageService} from "../../service/local-storage.service";
-import {NetworkService, Route} from "../sun-ferry/network.service";
 import * as moment from "moment";
-
-interface Subscription {
-  register(): Subscription
-}
+import {Route, SearchPanelService} from "../../search-panel/search-panel.service";
 
 export interface SearchPanelOutput {
   lane: string,
@@ -166,7 +163,7 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
   lineOptions: Observable<string[]> = this.anySelection
     .pipe(
       switchMap((line) => {
-        return this.networkService.getLineOptions(NetworkService.toDisplay(line.value))
+        return this.searchPanelService.getLineOptions(SearchPanelService.toDisplay(line.value))
       })
     )
 
@@ -190,8 +187,8 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
     )
   )
 
-  constructor(private networkService: NetworkService) {
-    super()
+  constructor(private searchPanelService: SearchPanelService) {
+    super(searchPanelService)
   }
 
 
@@ -255,7 +252,7 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
     )
 
     // Any change will trigger refresh
-    this.subscriptions.push(
+    this.sub(
       combineLatest([
           this.toFromObs.pipe(filter((it) => it.nonEmpty())),
           this.dateOpt,
@@ -273,10 +270,10 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
 
           const dateString = Scopes.of(dateOpt).map(it => moment(it).format("YYYYMMDD")).get()
 
-          this.networkService.getSchedule(
-            NetworkService.toValue(dest.value),
-            NetworkService.toValue(from),
-            NetworkService.toValue(to),
+          this.searchPanelService.getSchedule(
+            SearchPanelService.toValue(dest.value),
+            SearchPanelService.toValue(from),
+            SearchPanelService.toValue(to),
             dateString
           )
             .subscribe((it) => {
@@ -292,7 +289,7 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
     )
 
     this.sub(
-      this.networkService.getRoutes() // when start get all routes
+      this.searchPanelService.getRoutes() // when start get all routes
         .subscribe(it => {
           console.log("Load all routes" + it)
 

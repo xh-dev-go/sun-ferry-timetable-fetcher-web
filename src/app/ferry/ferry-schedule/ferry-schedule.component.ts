@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {NetworkService, Route} from "../sun-ferry/network.service";
+import {NetworkService} from "../sun-ferry/network.service";
 import {BaseComponent} from "../../base/base.component";
 import {SearchPanelOutput} from "../search-panel/search-panel.component";
+import {Route} from "../../search-panel/search-panel.service";
 
 @Component({
   selector: 'app-ferry-schedule',
@@ -25,7 +26,7 @@ export class FerryScheduleComponent extends BaseComponent implements OnInit {
   to: string = ""
   lane: string = ""
 
-  constructor(private networkService: NetworkService) {
-    super()
+  constructor(networkService: NetworkService) {
+    super(networkService)
   }
 }

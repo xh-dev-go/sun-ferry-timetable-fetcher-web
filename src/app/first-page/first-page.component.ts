@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NetworkService} from "../ferry/sun-ferry/network.service";
 import {Subscription} from "rxjs";
+import {SearchPanelService} from "../search-panel/search-panel.service";
 
 @Component({
   selector: 'app-first-page',
@@ -12,13 +13,13 @@ import {Subscription} from "rxjs";
 })
 export class FirstPageComponent implements OnInit, OnDestroy {
 
-  constructor(private networkService: NetworkService) { }
+  constructor(private searchPanelService: SearchPanelService) { }
 
   subs: Subscription[] = []
   map: Map<string,Map<string,string>> = new Map<string,Map<string,string>>()
 
   ngOnInit(): void {
-    this.subs.push(this.networkService.getServiceMap().subscribe(it=>{
+    this.subs.push(this.searchPanelService.getServiceMap().subscribe(it=>{
       this.map = it
     }))
   }
