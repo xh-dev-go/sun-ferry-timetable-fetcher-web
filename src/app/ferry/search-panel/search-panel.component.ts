@@ -130,7 +130,9 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
         return of({from: "default", value} as Pair)
       } else {
         return this.routeOptionsModel.pipe(
+          filter((it)=>it!==null),
           take(1),
+          map((it)=>it!),
           map<SingleSelectionModel<string>, Pair>(
             (it, _) => {
               return {from: "rom", value: it.findOptions()[0].value().get()}
@@ -168,11 +170,11 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
       })
     )
 
-  routeOptionsModel: Subject<SingleSelectionModel<string>> = new Subject<SingleSelectionModel<string>>()
+  routeOptionsModel: BehaviorSubject<SingleSelectionModel<string>|null> = new BehaviorSubject<SingleSelectionModel<string>|null>(null)
 
   routeOptions: Observable<Selection<string>[]> = this.routeOptionsModel.pipe(
     filter((it) => it !== null),
-    map((it) => it.getAll()),
+    map((it) => it!.getAll()),
     tap((it) => {
       console.log(["latest route", ...it.map(it => it.value().get())].reduce((a, b) => `${a}\n${b}`))
     })
@@ -223,7 +225,12 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
 
 
     this.sub(
-      combineLatest([this.routeOptionsModel, this.initState])
+      combineLatest([
+        this.routeOptionsModel.pipe(
+          filter((it)=>it!==null),
+          map((it)=>it!)),
+        this.initState
+      ])
         .subscribe((it) => {
           const model: SingleSelectionModel<string> = it[0]
           const pair: Pair = it[1]
