@@ -282,7 +282,7 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
             .subscribe((it) => {
 
               this.searchResult.next({
-                lane: `${dest} Lane`,
+                lane: `${dest.value} Lane`,
                 from,
                 to,
                 schedule: it
