@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NextFerryComponent } from './next-ferry.component';
+import {SearchPanelComponent} from "../search-panel/search-panel.component";
+import {HttpClientModule} from "@angular/common/http";
 
 describe('NextFerryComponent', () => {
   let component: NextFerryComponent;
@@ -8,7 +10,8 @@ describe('NextFerryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NextFerryComponent ]
+      imports:[HttpClientModule],
+      declarations: [ NextFerryComponent, SearchPanelComponent ]
     })
     .compileComponents();
 

@@ -45,7 +45,7 @@ export class ToFrom {
   updateTo(to: string): ToFrom {
     if (this.toOption.includes(to)) {
       if (to === this.from) {
-        const fromOptions = this.fromOption.filter((it) => it !== this.to)
+        const fromOptions = this.fromOption.filter((it) => it !== this.from)
         if (fromOptions.length > 0) {
           return ToFrom.of(this.fromOption, fromOptions[0], this.toOption, to)
         } else {
@@ -85,7 +85,7 @@ export class ToFrom {
     this.toOption = toOption
     this.from = from;
     this.to = to;
-    if(from === to){
+    if(from === to && from !== ""){
       throw Error("From and To is the same")
     }
   }
