@@ -4,4 +4,16 @@
   {{out.from}}
   {{out.to}}
   <!--  {{out.schedule}}-->
+
+  <div *ngIf="takeFirst.obs|async; let item">
+    <button (click)="takeFirst.sub.next(item-1)">-</button>
+    {{item}}
+    <button (click)="takeFirst.sub.next(item+1)">+</button>
+  </div>
+  <ul>
+    <li *ngFor="let item of routes.obs|async">
+      {{item.Date}}
+    </li>
+
+  </ul>
 </div>

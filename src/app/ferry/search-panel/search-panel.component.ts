@@ -19,6 +19,11 @@ import {BaseComponent} from "../../base/base.component";
 import {Selection, SingleSelectionModel} from "pyyqww_t1/dist/selectionModel/SingleSelection";
 import {LocalStorageService} from "../../service/local-storage.service";
 import {SearchPanelService} from "../../search-panel/search-panel.service";
+import {RxServiceService} from "../../base/rxLib";
+import {time} from "../../base/timeLib";
+import yesterday = time.yesterday;
+import tmr = time.tmr;
+import toDay = time.toDay;
 
 export interface SearchPanelOutput {
   lane: string,
@@ -111,7 +116,6 @@ export class ToFrom {
 })
 export class SearchPanelComponent extends BaseComponent implements OnInit {
   faArrowRightArrowLeft = faArrowRightArrowLeft
-  dayMs = 86400000
 
   @Output()
   searchResult: EventEmitter<SearchPanelOutput> = new EventEmitter<SearchPanelOutput>()
@@ -196,9 +200,6 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
 
 
   /* Set the date bar */
-  toDay = () => new Date()
-  tmr = (date: Date) => Scopes.of(new Date(date)).apply((it) => it.setTime(it.getTime() + this.dayMs)).get()
-  yesterday = (date: Date) => Scopes.of(new Date(date)).apply((it) => it.setTime(it.getTime() - this.dayMs)).get()
 
   dateOpt = new BehaviorSubject<Date>(new Date()) //today
   dateToday = this.dateOpt.pipe(
@@ -206,8 +207,8 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
       Scopes.of(new Date(it)).apply(it => it!.setHours(0, 0, 0)).get()!
     )
   )
-  dateYesterdayOpt = this.dateToday.pipe(map((it) => this.yesterday(it)))
-  dateTmrOpt = this.dateToday.pipe(map((it) => this.tmr(it)))
+  dateYesterdayOpt = this.dateToday.pipe(map((it) => yesterday(it)))
+  dateTmrOpt = this.dateToday.pipe(map((it) => tmr(it)))
 
   toFromObservable = this.lineOptions.pipe(
     filter(it => it.length > 0),
@@ -296,4 +297,15 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
   }
 
 
+  toDay():Date {
+    return toDay()
+  }
+
+  yesterday(value: Date) {
+    return yesterday(value);
+  }
+
+  tmr(value: Date) {
+    return tmr(value);
+  }
 }

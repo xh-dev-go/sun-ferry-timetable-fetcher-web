@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {BaseComponent} from "../../base/base.component";
 import {SearchPanelOutput} from "../search-panel/search-panel.component";
 import {Route, SearchPanelService} from "../../search-panel/search-panel.service";
-import {RxServiceService} from "../../base/rx-service.service";
+import {RxServiceService} from "../../base/rxLib";
 import obsd = RxServiceService.obsd;
 
 @Component({

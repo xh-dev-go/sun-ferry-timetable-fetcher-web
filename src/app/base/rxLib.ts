@@ -1,4 +1,5 @@
 import {BehaviorSubject, filter, map, Observable, Subject} from "rxjs";
+import {Scopes} from "pyyqww_t1/dist/Scoping/Scopes";
 
 export interface ObsPair<T> {
   sub: Subject<T>
@@ -19,4 +20,5 @@ export module RxServiceService {
     const subject = new BehaviorSubject<T>(d)
     return {sub: subject, obs: subject}
   }
+
 }
