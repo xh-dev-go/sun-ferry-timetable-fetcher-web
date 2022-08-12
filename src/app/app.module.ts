@@ -14,6 +14,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {SearchPanelComponent} from './ferry/search-panel/search-panel.component';
 import {NextFerryComponent} from "./ferry/next-ferry/next-ferry.component";
+import { CountDownCardComponent } from './ferry/next-ferry/count-down-card/count-down-card.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import {NextFerryComponent} from "./ferry/next-ferry/next-ferry.component";
     BaseComponent,
     NextFerryComponent,
     SearchPanelComponent,
+    CountDownCardComponent,
   ],
   imports: [
     BrowserModule,

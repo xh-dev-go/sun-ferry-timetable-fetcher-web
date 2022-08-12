@@ -10,10 +10,7 @@
     {{item}}
     <button (click)="takeFirst.sub.next(item+1)">+</button>
   </div>
-  <ul>
-    <li *ngFor="let item of routes.obs|async">
-      {{item.Date}}
-    </li>
-
-  </ul>
+  <div *ngFor="let item of routes.obs|async">
+    <app-count-down-card [route]="item"></app-count-down-card>
+  </div>
 </div>

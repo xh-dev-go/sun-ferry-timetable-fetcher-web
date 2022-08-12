@@ -13,6 +13,9 @@ export module RxServiceService {
       filter((it) => it !== null),
       map((it) => it!)
     )
+
+    let curValue = ()=>subject.value
+
     return {sub: subject as Subject<T>, obs: observable}
   }
 
