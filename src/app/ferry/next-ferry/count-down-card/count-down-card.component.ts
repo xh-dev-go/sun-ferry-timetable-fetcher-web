@@ -42,7 +42,6 @@ export class CountDownCardComponent implements OnInit, OnDestroy {
           } else{
             this.urgentStr.sub.next("bg-primary")
           }
-
        })
     )
   }

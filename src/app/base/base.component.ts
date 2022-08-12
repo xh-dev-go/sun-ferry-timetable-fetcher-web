@@ -13,8 +13,11 @@ import {NetworkService} from "../ferry/sun-ferry/network.service";
 })
 export class BaseComponent extends BaseService implements OnInit, OnDestroy {
 
-  constructor(networkService: NetworkService) {
-    super(networkService)
+  baseUrl():string {
+    return `${this.networkService.url}`
+  }
+  constructor(private networkService: NetworkService) {
+    super()
   }
 
   ngOnInit(): void {

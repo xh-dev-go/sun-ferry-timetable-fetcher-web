@@ -92,12 +92,8 @@ export class SearchPanelService extends BaseService {
   }
 
   constructor(private http: HttpClient,networkService: NetworkService) {
-    super(networkService)
-    if(!environment.production){
-      this.url = `${environment.host}/api/v1/ferry/sun-ferry`
-    } else {
-      this.url = `${window.location.protocol}//${window.location.host}/api/v1/ferry/sun-ferry`
-    }
+    super()
+    this.url = `${networkService.url}/v1/ferry/sun-ferry`
     console.log(`Base URL: ${this.url}`)
     this.subscriptions.push(
       this.http.get<any>(`${this.url}/service-map`)

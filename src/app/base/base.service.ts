@@ -7,10 +7,7 @@ import {NetworkService} from "../ferry/sun-ferry/network.service";
 })
 export class BaseService implements OnDestroy {
   protected subscriptions: Subscription[] = []
-  baseUrl():string {
-    return `${this.networkService.url}`
-  }
-  constructor(protected networkService: NetworkService) { }
+  constructor() { }
 
   ngOnDestroy(): void {
     this.subscriptions.map(it=>{
