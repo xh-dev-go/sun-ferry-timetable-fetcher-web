@@ -1,1 +1,7 @@
-<app-search-panel></app-search-panel>
+<app-search-panel (searchResult)="searchOutput.sub.next($event)"></app-search-panel>
+<div *ngIf="searchOutput.obs|async; let out">
+  {{out.lane}}
+  {{out.from}}
+  {{out.to}}
+  <!--  {{out.schedule}}-->
+</div>

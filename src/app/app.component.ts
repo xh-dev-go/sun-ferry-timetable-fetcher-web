@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { faFerry, faSpinner} from "@fortawesome/free-solid-svg-icons";
+import {Component} from '@angular/core';
+import {faFerry, faSpinner} from "@fortawesome/free-solid-svg-icons";
 import {BusyManService} from "./service/busy-man.service";
 
 @Component({

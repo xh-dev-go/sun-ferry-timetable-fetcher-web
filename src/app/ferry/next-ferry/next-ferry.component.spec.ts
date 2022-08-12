@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { NextFerryComponent } from './next-ferry.component';
+import {NextFerryComponent} from './next-ferry.component';
 import {SearchPanelComponent} from "../search-panel/search-panel.component";
 import {HttpClientModule} from "@angular/common/http";
 

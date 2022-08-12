@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { NetworkService } from './network.service';
+import {NetworkService} from './network.service';
 import {HttpClient, HttpClientModule} from "@angular/common/http";
 
 describe('NetworkService', () => {

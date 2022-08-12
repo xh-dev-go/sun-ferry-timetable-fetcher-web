@@ -1,5 +1,4 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subscription} from "rxjs";
 import {BaseService} from "./base.service";
 import {NetworkService} from "../ferry/sun-ferry/network.service";
 

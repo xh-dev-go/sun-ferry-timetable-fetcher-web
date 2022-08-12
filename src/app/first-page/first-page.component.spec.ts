@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FirstPageComponent } from './first-page.component';
+import {FirstPageComponent} from './first-page.component';
 import {HttpClientModule} from "@angular/common/http";
 
 describe('FirstPageComponent', () => {

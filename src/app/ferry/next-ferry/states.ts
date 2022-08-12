@@ -1,4 +1,4 @@
-import {createAction, createFeature, createFeatureSelector, createReducer, createSelector, on} from "@ngrx/store";
+import {createAction, createReducer, on} from "@ngrx/store";
 
 export interface SomeState {
   value: number

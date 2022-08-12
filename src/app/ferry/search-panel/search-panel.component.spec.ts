@@ -1,8 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {SearchPanelComponent, ToFrom} from './search-panel.component';
 import {HttpClientModule} from "@angular/common/http";
-import {NetworkService} from "../sun-ferry/network.service";
 
 describe('test ToFrom', ()=>{
   let arr = ["a","b","c","d"]

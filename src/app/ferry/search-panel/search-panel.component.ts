@@ -18,14 +18,14 @@ import {faArrowRightArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import {BaseComponent} from "../../base/base.component";
 import {Selection, SingleSelectionModel} from "pyyqww_t1/dist/selectionModel/SingleSelection";
 import {LocalStorageService} from "../../service/local-storage.service";
-import * as moment from "moment";
-import {Route, SearchPanelService} from "../../search-panel/search-panel.service";
+import {SearchPanelService} from "../../search-panel/search-panel.service";
 
 export interface SearchPanelOutput {
   lane: string,
   from: string,
   to: string,
-  schedule: Route[]
+  date: Date
+  // schedule: Route[]
 }
 
 export interface Pair {
@@ -265,26 +265,16 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
         .subscribe((it) => {
           const to = it[0].to
           const from = it[0].from
-          const dateOpt = it[1]
+          const date = it[1]
           const dest = it[2]
 
-          const dateString = Scopes.of(dateOpt).map(it => moment(it).format("YYYYMMDD")).get()
+          this.searchResult.next({
+            lane: dest.value,
+            from,
+            to,
+            date
+          })
 
-          this.searchPanelService.getSchedule(
-            SearchPanelService.toValue(dest.value),
-            SearchPanelService.toValue(from),
-            SearchPanelService.toValue(to),
-            dateString
-          )
-            .subscribe((it) => {
-
-              this.searchResult.next({
-                lane: `${dest.value} Lane`,
-                from,
-                to,
-                schedule: it
-              })
-            })
         })
     )
 

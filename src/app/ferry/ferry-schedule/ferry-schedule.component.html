@@ -11,9 +11,9 @@
   </thead>
 
   <tbody class="table-group-divider">
-  <tr *ngFor="let r of schedule">
+  <tr *ngFor="let r of schedule.obs|async">
     <td>{{r.Speed}}</td>
-    <td>{{r.Time.slice(0,2)}}:{{r.Time.slice(2)}}</td>
+    <td>{{r.Time.slice(0, 2)}}:{{r.Time.slice(2)}}</td>
     <td>{{r.Remark}}</td>
   </tr>
   </tbody>

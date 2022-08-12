@@ -1,4 +1,7 @@
 import {Component, OnInit} from '@angular/core';
+import {SearchPanelOutput} from "../search-panel/search-panel.component";
+import {RxServiceService} from "../../base/rx-service.service";
+import obs = RxServiceService.obs;
 
 
 @Component({
@@ -9,6 +12,8 @@ import {Component, OnInit} from '@angular/core';
 export class NextFerryComponent implements OnInit {
   constructor() {
   }
+
+  searchOutput = obs<SearchPanelOutput>()
 
 
   ngOnInit(): void {

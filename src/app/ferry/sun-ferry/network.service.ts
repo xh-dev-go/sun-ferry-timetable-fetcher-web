@@ -1,9 +1,5 @@
-import {Injectable, OnDestroy, OnInit} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {Injectable} from '@angular/core';
 import {environment} from "../../../environments/environment";
-import {BehaviorSubject, filter, firstValueFrom, from, map, Observable, take} from "rxjs";
-import {BaseService} from "../../base/base.service";
-import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root',

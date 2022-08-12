@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {NetworkService} from "../sun-ferry/network.service";
 import {BaseComponent} from "../../base/base.component";
 import {SearchPanelOutput} from "../search-panel/search-panel.component";
-import {Route} from "../../search-panel/search-panel.service";
+import {Route, SearchPanelService} from "../../search-panel/search-panel.service";
+import {RxServiceService} from "../../base/rx-service.service";
+import obsd = RxServiceService.obsd;
 
 @Component({
   selector: 'app-ferry-schedule',
@@ -10,23 +11,32 @@ import {Route} from "../../search-panel/search-panel.service";
   styleUrls: ['./ferry-schedule.component.css']
 })
 export class FerryScheduleComponent extends BaseComponent implements OnInit {
+  schedule = obsd<Route[]>([])
 
-
-
-  searchResult(result: SearchPanelOutput) {
-    this.schedule = result.schedule
-    this.from = result.from
-    this.to = result.to
-    this.lane = result.lane
-
+  constructor(private searchService: SearchPanelService) {
+    super(searchService)
   }
 
-  schedule: Route[] = []
   from: string = ""
   to: string = ""
   lane: string = ""
 
-  constructor(networkService: NetworkService) {
-    super(networkService)
+  searchResult(result: SearchPanelOutput) {
+    this.from = result.from
+    this.to = result.to
+    this.lane = result.lane
+
+    this.sub(
+      this.searchService.getSchedule(
+        SearchPanelService.toValue(this.lane),
+        SearchPanelService.toValue(this.from),
+        SearchPanelService.toValue(this.to),
+        result.date
+      )
+        .subscribe((it) => {
+          this.schedule.sub.next(it)
+        })
+    )
+
   }
 }

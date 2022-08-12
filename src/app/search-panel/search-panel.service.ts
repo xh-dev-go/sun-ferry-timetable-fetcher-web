@@ -1,14 +1,16 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {BehaviorSubject, filter, firstValueFrom, from, map, Observable, take} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {BaseService} from "../base/base.service";
 import {NetworkService} from "../ferry/sun-ferry/network.service";
+import {Scopes} from "pyyqww_t1/dist/Scoping/Scopes";
+import * as moment from "moment";
 
 @Injectable({
   providedIn: 'root'
 })
-export class SearchPanelService extends BaseService{
+export class SearchPanelService extends BaseService {
   url: string
 
   static toMap(sm: any): Map<string, Map<string, string>> {
@@ -111,10 +113,11 @@ export class SearchPanelService extends BaseService{
   private routesMapSubject = new BehaviorSubject<Map<string, Map<string, string>>>(new Map())
 
 
-  getSchedule(line:string, from: string, to: string, date: string): Observable<Route[]>{
-    return this.http.get<RouteDto[]>(`${this.url}/${line}/${from}/${to}/${date}`)
+  getSchedule(line: string, from: string, to: string, date: Date): Observable<Route[]> {
+    const dateString = Scopes.of(date).map(it => moment(it).format("YYYYMMDD")).get()
+    return this.http.get<RouteDto[]>(`${this.url}/${line}/${from}/${to}/${dateString}`)
       .pipe(
-        map((it,_)=>it.map(it=>toRoute(it)))
+        map((it, _) => it.map(it => toRoute(it)))
       )
   }
 }
