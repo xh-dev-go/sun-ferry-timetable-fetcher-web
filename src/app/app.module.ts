@@ -15,6 +15,7 @@ import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {SearchPanelComponent} from './ferry/search-panel/search-panel.component';
 import {NextFerryComponent} from "./ferry/next-ferry/next-ferry.component";
 import { CountDownCardComponent } from './ferry/next-ferry/count-down-card/count-down-card.component';
+import { TrafficViewerComponent } from './traffic-viewer/traffic-viewer.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { CountDownCardComponent } from './ferry/next-ferry/count-down-card/count
     NextFerryComponent,
     SearchPanelComponent,
     CountDownCardComponent,
+    TrafficViewerComponent,
   ],
   imports: [
     BrowserModule,
@@ -33,7 +35,8 @@ import { CountDownCardComponent } from './ferry/next-ferry/count-down-card/count
       {path: "first-page", component: FirstPageComponent},
       {path: "ferry-schedule", component: FerryScheduleComponent},
       {path: "next-ferry", component: NextFerryComponent},
-      {path: "", redirectTo: "/next-ferry", pathMatch: "full"}
+      {path: "traffic-viewer", component: TrafficViewerComponent},
+      {path: "", redirectTo: "/traffic-viewer", pathMatch: "full"}
     ]),
     FormsModule,
     BrowserAnimationsModule,

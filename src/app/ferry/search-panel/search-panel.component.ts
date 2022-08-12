@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -119,6 +119,9 @@ export class SearchPanelComponent extends BaseComponent implements OnInit {
 
   @Output()
   searchResult: EventEmitter<SearchPanelOutput> = new EventEmitter<SearchPanelOutput>()
+
+  @Input()
+  allowSwitchDate = true
 
   // --------------- Init Stages---------------------
   //

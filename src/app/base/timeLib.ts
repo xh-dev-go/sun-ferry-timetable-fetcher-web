@@ -75,10 +75,12 @@ export module time {
           msg += ` ${mins} minutes`
         }
       }
-      if (seconds == 1) {
-        msg += ` ${seconds} second`
-      } else {
-        msg += ` ${seconds} seconds`
+      if(days === 0 && hours === 0 && mins < 30){
+        if (seconds == 1) {
+          msg += ` ${seconds} second`
+        } else {
+          msg += ` ${seconds} seconds`
+        }
       }
 
       return msg

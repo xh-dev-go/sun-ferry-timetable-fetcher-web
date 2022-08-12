@@ -1,5 +1,5 @@
 <div class="card">
-  <div *ngIf="route">
-    {{route.From}} - {{route.To}}<span class="badge" [ngClass]="(urgentStr.obs | async)!">{{(countDownStr.obs|async)!}}</span>
+  <div *ngIf="route" [ngClass]="(urgentStr.obs | async)!">
+    {{route.Date|date:'HH:mm'}} | {{route.From}} - {{route.To}} | {{(countDownStr.obs|async)!}}
   </div>
 </div>

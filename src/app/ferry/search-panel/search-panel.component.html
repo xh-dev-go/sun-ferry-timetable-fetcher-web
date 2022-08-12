@@ -1,14 +1,14 @@
 <div class="btn-group">
-  <button class="btn btn-secondary" (click)="dateOpt.next(this.yesterday(dateOpt.value))">
+  <button class="btn btn-secondary" (click)="allowSwitchDate && dateOpt.next(this.yesterday(dateOpt.value))">
     {{dateYesterdayOpt|async|date: LAYOUT}}
   </button>
   <button class="btn btn-success">
     {{dateOpt|async|date: LAYOUT}}
   </button>
-  <button class="btn btn-secondary" (click)="dateOpt.next(this.tmr(dateOpt.value))">
+  <button class="btn btn-secondary" (click)="allowSwitchDate && dateOpt.next(this.tmr(dateOpt.value))">
     {{dateTmrOpt|async|date: LAYOUT}}
   </button>
-  <button class="btn btn-danger" (click)="dateOpt.next(toDay())">
+  <button class="btn btn-danger" (click)="allowSwitchDate && dateOpt.next(toDay())">
     Today
   </button>
 </div>
