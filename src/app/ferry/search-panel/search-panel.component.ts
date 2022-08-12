@@ -19,7 +19,6 @@ import {BaseComponent} from "../../base/base.component";
 import {Selection, SingleSelectionModel} from "pyyqww_t1/dist/selectionModel/SingleSelection";
 import {LocalStorageService} from "../../service/local-storage.service";
 import {SearchPanelService} from "../../search-panel/search-panel.service";
-import {RxServiceService} from "../../base/rxLib";
 import {time} from "../../base/timeLib";
 import yesterday = time.yesterday;
 import tmr = time.tmr;

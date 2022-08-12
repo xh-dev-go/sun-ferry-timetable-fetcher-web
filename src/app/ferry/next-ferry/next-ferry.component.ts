@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {SearchPanelOutput} from "../search-panel/search-panel.component";
-import {RxServiceService} from "../../base/rxLib";
 import {combineLatest, forkJoin, interval, map, Observable, switchMap} from "rxjs";
 import {Route, SearchPanelService} from "../../search-panel/search-panel.service";
 import {time} from "../../base/timeLib";
-import obs = RxServiceService.obs;
 import tmr = time.tmr;
+import {RxServiceService} from "pyyqww_t1/dist/rxlib/rxLib";
+import obs = RxServiceService.obs;
 import obsd = RxServiceService.obsd;
 
 

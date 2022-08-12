@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Route} from "../../../search-panel/search-panel.service";
 import {time} from "../../../base/timeLib";
-import {RxServiceService} from "../../../base/rxLib";
 import {interval, map, Subscription, timer} from "rxjs";
 import CountDownTo = time.CountDownTo;
+import {RxServiceService} from "pyyqww_t1/dist/rxlib/rxLib";
 import obsd = RxServiceService.obsd;
 
 @Component({
