@@ -35,8 +35,8 @@ import { TrafficViewerComponent } from './traffic-viewer/traffic-viewer.componen
       {path: "first-page", component: FirstPageComponent},
       {path: "ferry-schedule", component: FerryScheduleComponent},
       {path: "next-ferry", component: NextFerryComponent},
-      {path: "traffic-viewer", component: TrafficViewerComponent},
-      {path: "", redirectTo: "/traffic-viewer", pathMatch: "full"}
+      // {path: "traffic-viewer", component: TrafficViewerComponent},
+      {path: "", redirectTo: "/next-ferry", pathMatch: "full"}
     ]),
     FormsModule,
     BrowserAnimationsModule,
