@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container">
   <div class="navbar-nav">
     <div>
       <a class="navbar-brand" href="#">
@@ -9,6 +9,8 @@
       <a class="nav-item btn" routerLink="/ferry-schedule" routerLinkActive="active">Ferry Schedule</a>
       <a class="nav-item btn" routerLink="/first-page" routerLinkActive="active">Routes</a>
       <fa-icon class="fa fa-pull-right" *ngIf="busyStatus|async" [icon]="faSpinner" [spin]="true"></fa-icon>
+      <span class="badge bg-success">{{feVersion}}</span>
+      <span class="badge bg-warning">{{beVersion}}</span>
     </div>
   </div>
 </div>
