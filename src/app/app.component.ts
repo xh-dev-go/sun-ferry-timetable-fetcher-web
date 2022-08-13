@@ -18,7 +18,7 @@ export class AppComponent extends BaseService{
   title = 'web';
   faFerry = faFerry
   faSpinner = faSpinner
-  feVersion = `${environment.version}-${environment.commitId.substring(0,6)}`
+  feVersion = `${environment.version} - ${environment.commitId.substring(0,6)}`
   beVersion = ""
 
 
